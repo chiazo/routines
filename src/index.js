@@ -1,6 +1,6 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import { BrowserRouter, Route } from "react-router-dom";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Header, Footer } from "./components";
 import App from "./App";
@@ -13,11 +13,12 @@ const Index = () => (
     <BrowserRouter>
       <Header />
       <div>
-        <Route path="/" component={App} />
+        <Routes><Route path="/" component={App} /></Routes>
       </div>
       <Footer />
     </BrowserRouter>
   </div>
 );
 
-ReactDOM.render(<Index />, document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Index />);

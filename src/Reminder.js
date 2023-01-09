@@ -5,43 +5,43 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Form from "react-bootstrap/Form";
 
-const Note = ({
+const Reminder = ({
   id,
-  note,
+  reminder,
   date,
   changeEditStatus,
   edit,
-  currNoteId,
-  saveNote,
+  currReminderId,
+  saveReminder,
   disabled,
 }) => {
-  const [currNote, setCurrNote] = useState(note);
+  const [currReminder, setCurrReminder] = useState(reminder);
 
-  const editNote = (e) => {
-    if (currNoteId !== id) {
+  const editReminder = (e) => {
+    if (currReminderId !== id) {
       changeEditStatus(id);
     }
-    setCurrNote(e.target.value);
+    setCurrReminder(e.target.value);
   };
 
   const save = () => {
-    // TODO: call saveNote with id & the currNote state variable
+    // TODO: call saveReminder with id & the currReminder state variable
   };
 
-  const isCurrNote = currNoteId === id;
+  const isCurrReminder = currReminderId === id;
 
   return (
-    <div className="col-3 note" key={id}>
+    <div className="col-3 reminder" key={id}>
       <Form>
         <Form.Group>
-          {/** TODO: pass a couple important props to each Note component
-           * pass note to the defaultValue prop
-           * pass the editNote function to the onChange prop
+          {/** TODO: pass a couple important props to each Reminder component
+           * pass reminder to the defaultValue prop
+           * pass the editReminder function to the onChange prop
            * pass disabled to the disabled prop
            */}
           <FormControl as="textarea" rows={5} />
           <InputGroup.Append>
-            {edit && isCurrNote && (
+            {edit && isCurrReminder && (
               // TODO: pass the save function to the onClick prop of Button
               <Button className="save-btn">Save</Button>
             )}
@@ -54,4 +54,4 @@ const Note = ({
   );
 };
 
-export default Note;
+export default Reminder;

@@ -1,9 +1,6 @@
-import firebase from "firebase";
-import dotenv from "dotenv";
-
-// don't change anything in this file
-
-dotenv.config();
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
+import 'firebase/compat/auth';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -15,9 +12,7 @@ const config = {
   appId: process.env.REACT_APP_APP_ID,
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(config);
-}
+firebase.initializeApp(config);
 
 const fb = {
   db: firebase.database(),

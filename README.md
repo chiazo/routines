@@ -1,7 +1,3 @@
-# Note App
+# Routines
 
-A simple React app allowing you to take notes!
-
-Concepts / Tools practiced:
-
-- firebase cli
+notifying my way to maintaining my habits!
