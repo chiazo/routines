@@ -25,13 +25,14 @@ const Reminder = ({
   };
 
   const save = () => {
-    // TODO: call saveReminder with id & the currReminder state variable
+    saveReminder(id, currReminder);
   };
 
   const isCurrReminder = currReminderId === id;
 
   return (
     <div className="col-3 reminder" key={id}>
+      <Button onClick={editReminder}>Edit Reminder</Button>
       <Form>
         <Form.Group>
           {/** TODO: pass a couple important props to each Reminder component
@@ -39,16 +40,16 @@ const Reminder = ({
            * pass the editReminder function to the onChange prop
            * pass disabled to the disabled prop
            */}
-          <FormControl as="textarea" rows={5} />
+          <FormControl as="textarea" rows={5} disabled={disabled} />
           <InputGroup.Append>
             {edit && isCurrReminder && (
-              // TODO: pass the save function to the onClick prop of Button
-              <Button className="save-btn">Save</Button>
+              <Button className="save-btn" onClick={save}>
+                Save
+              </Button>
             )}
           </InputGroup.Append>
         </Form.Group>
       </Form>
-      {/**For fun: figure out other ways to display the date */}
       <div className="date">{date.toLocaleString()}</div>
     </div>
   );

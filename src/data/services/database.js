@@ -1,49 +1,74 @@
 import firebase from "./firebase_config";
 
-const db = firebase.db.ref("reminders");
+const db = firebase.db.ref("routines");
 
-const getAllReminders = (setReminders) => {
+const getAllRoutines = (setRoutines) => {
   return db.on("value", function (snapshot) {
     const dto = snapshot.val();
 
-    // TODO: if dto is null, pass an empty array to setReminders & return early
+    if (!dto) {
+      setRoutines([]);
+      return;
+    }
 
-    // firebase returns an object full of objects, with the unique id as each inner object's key
-    // this manipulates that data so each inner object contains this unique id as a property
     const result = Object.keys(dto).map((id) => ({
       id,
-      reminder: dto[id].reminder,
-      date: dto[id].date,
+      name: dto[id].name,
+      category: dto[id].category,
+      deliveryMethod: dto[id].deliveryMethod,
+      cadence: dto[id].cadence,
+      created: dto[id].created,
+      startDate: dto[id].startDate,
+      nextDate: dto[id].nextDate,
     }));
 
-    setReminders(Object.values(result));
+    setRoutines(Object.values(result));
   });
 };
 
-const createReminder = (data) => {
+const createRoutine = (routine) => {
   // this generates a unique id for any data that's about to be sent to the database
-  const newReminder = db.push();
+  const newRoutine = db.push();
+  console.log("newRoutine", newRoutine);
   // this passes the data to the database
-  newReminder.set(data);
+  // newRoutine.set(
+  //   {
+  //     name: routine.name,
+  //     category: routine.category,
+  //     deliveryMethod: routine.delivery_method.name,
+  //     cadence: routine.cadence.name,
+  //     created: routine.created.getTime(),
+  //     startDate: routine.start_date.getTime(),
+  //     nextDate: routine.next_date.getTime(),
+  //   },
+  //   (error) => {
+  //     if (error) {
+  //       console.log("Data could not be saved." + error);
+  //     } else {
+  //       console.log("Data saved successfully.");
+  //     }
+  //   }
+  // );
+  console.log("key", newRoutine.key);
   // we return the generated key to store it locally :)
-  return newReminder.key;
+  return newRoutine.key;
 };
 
-const updateReminder = (id, reminder, date) => {
-  // TODO: using db.child & chaining on the .update method, finish the code to update a reminder already in the database
+const updateRoutine = (id, routine, date) => {
+  // TODO: using db.child & chaining on the .update method, finish the code to update a routine already in the database
   // this is meant to be challenging, so you'll need to google how to use .update
-  // tip: db is already equal to firebase.database.ref("reminders")
+  // tip: db is already equal to firebase.database.ref("routines")
 };
 
-/**CHALLENGE: create a function called removeReminder that takes in an id and deletes a reminder in the database
+/**CHALLENGE: create a function called removeRoutine that takes in an id and deletes a routine in the database
  *
  */
 
 const methods = {
-  getAllReminders,
-  createReminder,
-  updateReminder,
-  // don't forget to export removeReminder if you write it
+  getAllRoutines,
+  createRoutine,
+  updateRoutine,
+  // don't forget to export removeRoutine if you write it
 };
 
 export default methods;

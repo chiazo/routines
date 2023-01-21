@@ -13,7 +13,9 @@ const Index = () => (
     <BrowserRouter>
       <Header />
       <div>
-        <Routes><Route path="/" component={App} /></Routes>
+        <Routes>
+          <Route path="/" element={<App />}></Route>
+        </Routes>
       </div>
       <Footer />
     </BrowserRouter>

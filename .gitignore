@@ -26,3 +26,5 @@ yarn-error.log*
 cssg.code-workspace
 
 .env
+src/cli/.env
+src/cli/node_modules
