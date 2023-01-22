@@ -15,25 +15,30 @@ class DeliveryMethod:
         "sprint": "@messaging.sprintpcs.com"
     }
 
-    def __init__(self, contact_info, routine) -> None:
+    def __init__(self, contact_info, obj) -> None:
         email, phone, carrier = itemgetter(
             'email', 'phone', 'carrier')(contact_info)
+        self.obj = obj
         self.email = email
         self.phone = phone
         self.carrier = carrier
-        self.delivery_method = routine.deliveryMethod
-        self.msg_name = routine.name
-        self.msg_cadence = routine.cadence
-        self.msg_next_date = routine.nextDate
-        self.delivered = datetime.now()
+        self.delivery_method = obj.deliveryMethod
+        self.msg_name = obj.name
+        self.msg_cadence = obj.cadence
+        self.msg_next_date = datetime.now()
+        if hasattr(obj,  'nextDate'):
+            self.msg_next_date = obj.nextDate
         self.send()
 
     def send(self):
         load_dotenv(
             f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/.env")
         date = self.msg_next_date.strftime('%a %b %d %Y')
-        subject = f'[Reminder] For {date}!'
+        subject = f'[{type(self.obj).__name__}] For {date}!'
         message = f"Hi! { self.msg_cadence.value[1] } day(s) until you should {self.msg_name}.\nUpcoming: {date}"
+
+        if not hasattr(self.obj,  'nextDate'):
+            message = f"Hi! { self.msg_cadence.name } reminder to {self.msg_name}!"
 
         if self.delivery_method == "Phone":
             self.send_text(message, subject)

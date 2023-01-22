@@ -4,19 +4,23 @@ from os import environ as env
 from dotenv import load_dotenv
 from enum import Enum
 from .routine import Routine
+from .reminder import Reminder
+from datetime import datetime
 
 
 class Routines:
     def __init__(self) -> None:
         self.routine_data = {}
+        self.reminder_data = {}
         self.definition_data = {}
         self.cadence_data = {}
         self.contact_info = {}
         self.cadence_enum = None
+        self.getContactInfo()
         self.getRoutines()
+        self.getReminders()
         self.getDefinitions()
         self.getCadenceEnum()
-        self.getContactInfo()
 
     def updateRoutines(self):
         updated_routines = []
@@ -28,16 +32,54 @@ class Routines:
                 updated_routines.append(updated)
         self.postUpdatedRoutines(updated_routines)
 
+    def updateReminders(self):
+        sent_reminders = []
+        updated_reminders = []
+        for reminder in self.reminder_data:
+            r = Reminder(reminder, self.cadence_enum,
+                         self.contact_info["notificationDay"])
+
+            reminded = r.remind(self.contact_info)
+            if hasattr(r,  'finishedOn'):
+                updated_reminders.append(r)
+            if reminded:
+                sent_reminders.append(reminded)
+
+        self.postUpdatedReminders(updated_reminders)
+        self.postCronLog(
+            list(set(sent_reminders + updated_reminders)), 'Reminders')
+
     def postUpdatedRoutines(self, updates):
         for r in updates:
             body = {"routine": {
                 'lastDate': r.lastDate.strftime('%m/%d/%Y'), }}
             self.call_endpoint(f"routines/{r.id}", body)
+        self.postCronLog(updates, 'Routines')
+
+    def postUpdatedReminders(self, updates):
+        for r in updates:
+            body = {"reminder": {
+                'finishedOn': r.finishedOn.strftime('%m/%d/%Y'), }}
+            self.call_endpoint(f"reminder/{r.id}", body)
+
+    def postCronLog(self, updates, type):
+        ids = ','.join([r.id for r in updates])
+        names = ','.join([r.name for r in updates])
+        body = {"cron": {
+                'timestamp': datetime.now().strftime('%m/%d/%Y'),
+                'type': type,
+                'ids': ids if ids else "N/A", "deliverySuccess": True, "names": names if names else "N/A"}}
+        self.call_endpoint("cron", body)
 
     def getRoutines(self):
         data = self.call_endpoint("routines")
         self.routine_data = data["routines"]
         return self.routine_data
+
+    def getReminders(self):
+        data = self.call_endpoint("reminders")
+        self.reminder_data = data["reminders"]
+        return self.reminder_data
 
     def getDefinitions(self):
         data = self.call_endpoint("definitions")
@@ -61,10 +103,17 @@ class Routines:
 
         try:
             if body:
-                res = requests.put(f"{env['URL']}/{endpoint}", json=body,
-                                   headers={'Authorization': f"Bearer {env['TOKEN']}"})
-                print(f"res: {res.json()}")
-                return res.status_code
+                if endpoint == "cron":
+                    print(body)
+                    res = requests.post(f"{env['URL']}/{endpoint}", json=body,
+                                        headers={'Authorization': f"Bearer {env['TOKEN']}"})
+                    print(f"res: {res.json()} + endpoint: {endpoint}")
+                    return res.status_code
+                else:
+                    res = requests.put(f"{env['URL']}/{endpoint}", json=body,
+                                       headers={'Authorization': f"Bearer {env['TOKEN']}"})
+                    print(f"res: {res.json()} + endpoint: {endpoint}")
+                    return res.status_code
             else:
                 r = requests.get(f"{env['URL']}/{endpoint}",
                                  headers={'Authorization': f"Bearer {env['TOKEN']}"})
