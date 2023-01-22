@@ -11,6 +11,7 @@ class Routines:
         self.routine_data = {}
         self.definition_data = {}
         self.cadence_data = {}
+        self.contact_info = {}
         self.cadence_enum = None
         self.getRoutines()
         self.getDefinitions()
@@ -19,8 +20,8 @@ class Routines:
     def updateRoutines(self):
         updated_routines = []
         for routine in self.routine_data:
-            r = Routine(routine['id'], routine['name'], routine['category'], routine['cadence'], routine['deliveryMethod'], datetime.strptime(
-                routine['lastDate'], '%m/%d/%Y'), datetime.strptime(routine['nextDate'], '%m/%d/%Y'), routine['iterations'], datetime.strptime(routine['created'], '%m/%d/%Y'), self.cadence_enum)
+            r = Routine(routine, self.cadence_enum)
+
             updated = r.update()
             if updated:
                 updated_routines.append(updated)
@@ -45,9 +46,13 @@ class Routines:
     def getCadenceEnum(self):
         data = self.call_endpoint("cadence")
         self.cadence_data = data["cadence"]
-        self.cadence_enum = Enum("C", [(c["cadence"], c["days"])
-                                       for c in self.cadence_data])
+        self.cadence_enum = Enum('Cadence', [(c["cadence"], (c["days"], c["delay"]))
+                                             for c in self.cadence_data], module=__name__)
         return self.cadence_enum
+
+    def getContactInfo(self):
+        data = self.call_endpoint("contact")
+        self.contact_info = data["contact"]
 
     def call_endpoint(self, endpoint, body=None):
         load_dotenv(".env")
