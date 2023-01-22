@@ -1,6 +1,5 @@
 import requests
 from os import environ as env
-from datetime import datetime
 from dotenv import load_dotenv
 from enum import Enum
 from .routine import Routine
@@ -16,13 +15,14 @@ class Routines:
         self.getRoutines()
         self.getDefinitions()
         self.getCadenceEnum()
+        self.getContactInfo()
 
     def updateRoutines(self):
         updated_routines = []
         for routine in self.routine_data:
             r = Routine(routine, self.cadence_enum)
 
-            updated = r.update()
+            updated = r.update(self.contact_info)
             if updated:
                 updated_routines.append(updated)
         self.postUpdatedRoutines(updated_routines)
@@ -52,7 +52,7 @@ class Routines:
 
     def getContactInfo(self):
         data = self.call_endpoint("contact")
-        self.contact_info = data["contact"]
+        self.contact_info = data["contact"][0]
 
     def call_endpoint(self, endpoint, body=None):
         load_dotenv(".env")

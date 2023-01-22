@@ -11,7 +11,7 @@ class Routine:
         Routine.Cadence = Cadence
 
         id, name, category, cadence, deliveryMethod, lastDate, nextDate, iterations, created = itemgetter(
-            'id', 'name', 'cadence', 'category', 'deliveryMethod', 'lastDate', 'nextDate', 'iterations', 'created')(routine)
+            'id', 'name', 'category', 'cadence', 'deliveryMethod', 'lastDate', 'nextDate', 'iterations', 'created')(routine)
 
         self.id = id
         self.name = name
@@ -52,7 +52,7 @@ class Routine:
         self.lastDate = datetime.now()
 
     def reset_cadence(self):
-        self.cadence = Routine.cadence((1, 1)).name
+        self.cadence = Routine.Cadence((1, 1)).name
 
     def snooze(self):
         self.update({}, True)
