@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from enum import Enum
 from .routine import Routine
 from .reminder import Reminder
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Routines:
@@ -41,7 +41,7 @@ class Routines:
                          self.contact_info["notificationDay"])
 
             reminded = r.remind(self.contact_info)
-            if r.finishedOn:
+            if r.finishedOn and (datetime.now().date() - r.finishedOn >= timedelta(days=1)):
                 updated_reminders.append(r)
             if reminded:
                 sent_reminders.append(reminded)
@@ -69,9 +69,9 @@ class Routines:
         body = {"cron": {
                 'timestamp': datetime.now().strftime("%c"),
                 'type': type,
-                'ids': ids if len(ids) > 0 else "N/A",
+                'changes': ids if len(ids) > 0 else "no updates :)",
                 "deliverySuccess": True,
-                "names": names if len(names) > 0 else "N/A"}}
+                "names": names if len(names) > 0 else "no updates :)"}}
         self.call_endpoint("cron", body)
 
     def getRoutines(self):

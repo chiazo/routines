@@ -21,7 +21,7 @@ class Reminder:
         self.name = name
         self.complete = complete
         self.finishedOn = datetime.strptime(
-            reminder["finishedOn"], '%m/%d/%Y') if "finishedOn" in reminder else None
+            reminder["finishedOn"], '%m/%d/%Y').date() if "finishedOn" in reminder else None
         self.deliveryMethod = deliveryMethod
         self.cadence = Cadence[cadence]
         self.day = Reminder.dayMap[notificationDay]
