@@ -31,6 +31,7 @@ class Routines:
             if updated:
                 updated_routines.append(updated)
         self.postUpdatedRoutines(updated_routines)
+        self.postCronLog(updated_routines, 'Routines')
 
     def updateReminders(self):
         sent_reminders = []
@@ -40,35 +41,37 @@ class Routines:
                          self.contact_info["notificationDay"])
 
             reminded = r.remind(self.contact_info)
-            if hasattr(r,  'finishedOn'):
+            if r.finishedOn:
                 updated_reminders.append(r)
             if reminded:
                 sent_reminders.append(reminded)
 
         self.postUpdatedReminders(updated_reminders)
         self.postCronLog(
-            list(set(sent_reminders + updated_reminders)), 'Reminders')
+            list(set(updated_reminders + sent_reminders)), 'Reminders')
 
     def postUpdatedRoutines(self, updates):
         for r in updates:
             body = {"routine": {
                 'lastDate': r.lastDate.strftime('%m/%d/%Y'), }}
             self.call_endpoint(f"routines/{r.id}", body)
-        self.postCronLog(updates, 'Routines')
 
     def postUpdatedReminders(self, updates):
         for r in updates:
-            body = {"reminder": {
-                'finishedOn': r.finishedOn.strftime('%m/%d/%Y'), }}
-            self.call_endpoint(f"reminder/{r.id}", body)
+            if r.finishedOn:
+                body = {"reminder": {
+                    'finishedOn': r.finishedOn.strftime('%m/%d/%Y'), }}
+                self.call_endpoint(f"reminders/{r.id}", body)
 
     def postCronLog(self, updates, type):
-        ids = ','.join([r.id for r in updates])
+        ids = ','.join([str(r.id) for r in updates])
         names = ','.join([r.name for r in updates])
         body = {"cron": {
-                'timestamp': datetime.now().strftime('%m/%d/%Y'),
+                'timestamp': datetime.now().strftime("%c"),
                 'type': type,
-                'ids': ids if ids else "N/A", "deliverySuccess": True, "names": names if names else "N/A"}}
+                'ids': ids if len(ids) > 0 else "N/A",
+                "deliverySuccess": True,
+                "names": names if len(names) > 0 else "N/A"}}
         self.call_endpoint("cron", body)
 
     def getRoutines(self):
@@ -104,7 +107,6 @@ class Routines:
         try:
             if body:
                 if endpoint == "cron":
-                    print(body)
                     res = requests.post(f"{env['URL']}/{endpoint}", json=body,
                                         headers={'Authorization': f"Bearer {env['TOKEN']}"})
                     print(f"res: {res.json()} + endpoint: {endpoint}")
