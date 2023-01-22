@@ -1,5 +1,5 @@
-import smtplib
 from email.message import EmailMessage
+import os
 from os import environ as env
 from dotenv import load_dotenv
 from datetime import datetime
@@ -29,7 +29,8 @@ class DeliveryMethod:
         self.send()
 
     def send(self):
-        load_dotenv(".env")
+        load_dotenv(
+            f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/.env")
         date = self.msg_next_date.strftime('%a %b %d %Y')
         subject = f'You have a reminder for {date}!'
         message = f"Hi! Here's your reminder that there's {self.msg_cadence.value[1]} day(s) until you should {self.msg_name}. Upcoming date: {date}"

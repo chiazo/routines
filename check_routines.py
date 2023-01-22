@@ -1,3 +1,7 @@
+import os
+import sys
+
+
 from data.routines import Routines
 
 
@@ -7,7 +11,6 @@ def main():
 
 
 # TODO:
-# - add daily chron job
 # - BONUS: add reminders (not routine, just like a to do list)
 
 if __name__ == "__main__":

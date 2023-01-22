@@ -1,4 +1,5 @@
 import requests
+import os
 from os import environ as env
 from dotenv import load_dotenv
 from enum import Enum
@@ -55,7 +56,8 @@ class Routines:
         self.contact_info = data["contact"][0]
 
     def call_endpoint(self, endpoint, body=None):
-        load_dotenv(".env")
+        path = f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/.env"
+        load_dotenv(path)
 
         try:
             if body:
